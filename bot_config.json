@@ -1,0 +1,9 @@
+{
+  "telegram_token": "8353740382:AAHCBY9E4jWUpzGpeEwRrrWFIOjbvDyStnA",
+  "admin_user_ids": [],
+  "max_stocks_per_user": 5,
+  "default_risk_level": "medium",
+  "supported_exchanges": ["NSE", "BSE", "NASDAQ", "NYSE"],
+  "analysis_timeframe": "1y",
+  "prediction_days": 1
+}
