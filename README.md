@@ -1,0 +1,2 @@
+# TraI
+AI Trading Bot
