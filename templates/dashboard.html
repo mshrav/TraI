@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Trading Bot - Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar - User List -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Trading Bot</span>
+                </div>
+                <div class="connection-status">
+                    <span class="status-dot" id="connectionDot"></span>
+                    <span id="connectionText">Connecting...</span>
+                </div>
+            </div>
+            
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="userSearch" placeholder="Search users...">
+            </div>
+            
+            <div class="users-list" id="usersList">
+                <!-- Users will be populated here -->
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading users...</p>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-value" id="totalUsers">0</span>
+                        <span class="stat-label">Users</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="totalMessages">0</span>
+                        <span class="stat-label">Messages</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="main-content">
+            <!-- No Chat Selected State -->
+            <div class="no-chat-selected" id="noChatSelected">
+                <div class="no-chat-content">
+                    <i class="fas fa-comments"></i>
+                    <h2>Select a conversation</h2>
+                    <p>Choose a user from the sidebar to view messages and reply</p>
+                </div>
+            </div>
+
+            <!-- Chat View -->
+            <div class="chat-view" id="chatView" style="display: none;">
+                <div class="chat-header">
+                    <div class="chat-user-info">
+                        <div class="user-avatar" id="chatUserAvatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-details">
+                            <h3 id="chatUserName">User Name</h3>
+                            <span class="user-id" id="chatUserId">ID: 123456789</span>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="action-btn" title="View Profile" id="viewProfileBtn">
+                            <i class="fas fa-user-circle"></i>
+                        </button>
+                        <button class="action-btn" title="Clear Chat" id="clearChatBtn">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="messages-container" id="messagesContainer">
+                    <!-- Messages will be populated here -->
+                </div>
+
+                <div class="message-input-container">
+                    <div class="quick-replies">
+                        <button class="quick-reply" data-text="/start">/start</button>
+                        <button class="quick-reply" data-text="/help">/help</button>
+                        <button class="quick-reply" data-text="/status">/status</button>
+                        <button class="quick-reply" data-text="Thank you for messaging!">Thanks</button>
+                    </div>
+                    <form id="messageForm" class="message-form">
+                        <input type="text" id="messageInput" placeholder="Type your reply..." autocomplete="off">
+                        <button type="submit" class="send-btn" id="sendBtn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- User Profile Modal -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>User Profile</h2>
+                <button class="close-modal" id="closeProfileModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="profileContent">
+                <!-- Profile content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Message sent!</span>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    </body>
+</html>
+

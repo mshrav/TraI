@@ -1,60 +1,56 @@
 @echo off
-echo ========================================
-echo 🤖 AI Trading Bot Setup
-echo ========================================
-echo.
+setlocal
+cd /d "%~dp0"
+echo =====================================
+echo TraI - Windows setup
+echo =====================================
 
-REM Check if Python is installed
-python --version >nul 2>&1
+where py >nul 2>nul
 if errorlevel 1 (
-    echo ❌ Python is not installed or not in PATH
-    echo Please install Python 3.7+ from https://python.org
-    pause
-    exit /b 1
+  echo Python launcher not found. Install Python 3.11 from https://www.python.org/downloads/
+  echo During installation, enable the Python Launcher and Add Python to PATH.
+  pause
+  exit /b 1
 )
 
-echo ✅ Python detected
-echo.
-
-REM Install dependencies
-echo 📦 Installing dependencies...
-pip install -r requirements.txt
+py -3.11 --version
 if errorlevel 1 (
-    echo ❌ Failed to install dependencies
-    pause
-    exit /b 1
+  echo Python 3.11 is required. Install it, then rerun setup.bat.
+  pause
+  exit /b 1
 )
-echo ✅ Dependencies installed
-echo.
 
-REM Create config file if it doesn't exist
-if not exist "bot_config.json" (
-    echo 📝 Creating configuration template...
-    echo {"telegram_token": "YOUR_TELEGRAM_BOT_TOKEN_HERE", "admin_user_ids": [], "max_stocks_per_user": 5, "default_risk_level": "medium", "supported_exchanges": ["NSE", "BSE", "NASDAQ", "NYSE"], "analysis_timeframe": "1y", "prediction_days": 1} > bot_config.json
-    echo ✅ Configuration template created
-) else (
-    echo ✅ Configuration file already exists
+if not exist ".venv\Scripts\python.exe" (
+  echo Creating virtual environment...
+  py -3.11 -m venv .venv
+  if errorlevel 1 goto failed
 )
-echo.
 
-REM Create user data file if it doesn't exist
-if not exist "user_data.json" (
-    echo 📝 Creating user data file...
-    echo {} > user_data.json
-    echo ✅ User data file created
-) else (
-    echo ✅ User data file already exists
+echo Installing dependencies. This step needs internet access...
+".venv\Scripts\python.exe" -m pip install --upgrade pip
+if errorlevel 1 goto failed
+".venv\Scripts\python.exe" -m pip install -r requirements-dev.txt
+if errorlevel 1 goto failed
+
+if not exist ".env" (
+  copy .env.example .env >nul
+  echo Created .env. Open it and set TELEGRAM_BOT_TOKEN if you want Telegram enabled.
 )
-echo.
+if not exist "messages.json" echo {}>messages.json
+if not exist "user_data.json" echo {}>user_data.json
 
-echo 🎉 Setup completed successfully!
 echo.
-echo Next steps:
-echo 1. Edit bot_config.json with your Telegram bot token
-echo 2. Run: python main.py --mode telegram
-echo 3. Or double-click run_telegram_bot.bat
+echo Setup completed. Next:
+echo 1. Edit .env and add your NEW Telegram token.
+echo 2. Run run_dashboard.bat for the web dashboard.
+echo 3. Run run_telegram_bot.bat for the Telegram bot.
+echo 4. Run run_all.bat to start both.
 echo.
-echo For help, see README.md
-echo.
-
 pause
+exit /b 0
+
+:failed
+echo.
+echo Setup failed. Check internet access and Python 3.11 installation.
+pause
+exit /b 1

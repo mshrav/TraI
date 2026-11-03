@@ -1,158 +1,146 @@
-# AI Trading Bot
+# TraI — AI Stock Analysis & Telegram Dashboard
 
-A comprehensive AI-powered trading bot for stock analysis and trading recommendations. Features both GUI and Telegram interfaces for easy access. Built with Python, yfinance for data, scikit-learn for ML, and technical analysis.
+TraI is a **research and paper-analysis project** for historical stock data. It combines a Python stock-analysis engine, RSI/MACD/moving-average signals, a next-session close regression baseline, a local Flask/Socket.IO admin inbox, and an optional Telegram bot.
 
-## Features
+> **Important:** This project does not place real trades. Yahoo Finance data is unofficial, can be delayed or unavailable, and is not an exchange-grade feed. Prediction outputs and technical signals are experimental and are not investment advice. The reported signal score is a rule score, **not** a probability of profit.
 
-### 🤖 Core Features
-- **Stock Analysis**: Analyze any stock with AI predictions and technical indicators
-- **Trading Signals**: Get buy/sell/hold recommendations with confidence levels
-- **Portfolio Management**: Personalized recommendations based on risk tolerance
-- **Watchlist Management**: Track your favorite stocks
-- **User Profiles**: Personalized experience with risk assessment
+## Security before first run
 
-### 💻 Interface Options
-- **GUI Mode**: Traditional desktop application with tkinter
-- **Telegram Bot**: Chat-based interface for mobile/convenient access
+The source archive supplied for this cleanup included a Telegram bot token and real Telegram user profile records. They have been removed from this cleaned package. **Revoke the previously exposed bot token in Telegram's @BotFather and generate a new token.** Treat the old token as compromised even if you believe it was only used locally.
 
-### 📊 Technical Analysis
-- Linear regression predictions
-- RSI (Relative Strength Index)
-- MACD (Moving Average Convergence Divergence)
-- Moving averages (20-day, 50-day)
-- Risk-based stock recommendations
+1. Copy `.env.example` to `.env` (Windows setup does this automatically).
+2. Paste the newly generated token into `TELEGRAM_BOT_TOKEN=`.
+3. Replace `DASHBOARD_WEBHOOK_TOKEN` and `FLASK_SECRET_KEY` with long random values.
+4. Never upload `.env`, `user_data.json`, or `messages.json` to GitHub.
+
+The dashboard binds to `127.0.0.1` by default. It currently has **no admin login**, so do not set `DASHBOARD_HOST=0.0.0.0` or expose it through a public tunnel/reverse proxy. Public deployment requires authentication, authorization, HTTPS, rate limiting, and a production WSGI/Socket.IO server first.
 
 ## Requirements
-- Python 3.7+
-- Windows 10/11 (or any OS with Python installed)
-- Telegram account (for Telegram bot mode)
-- Internet connection for stock data
 
-## Setup
+- Windows 10/11 (instructions below)
+- Python **3.11** recommended
+- Internet access for pip installation and Yahoo Finance data
+- Telegram account and a bot token only if you want Telegram functionality
+- VS Code optional
 
-### Quick Setup (Recommended)
-Run the automated setup script:
-- **Windows**: Double-click `setup.bat`
-- **Command Line**: `python setup.py`
+## Windows installation
 
-This will automatically:
-- Check Python version
-- Install dependencies
-- Create configuration files
-- Set up user data storage
+1. Install Python 3.11 from <https://www.python.org/downloads/>. In the installer, enable **Add Python to PATH** and the Python Launcher.
+2. Extract the ZIP into a normal folder, for example `C:\Projects\TraI`. Do not run it from inside the ZIP preview.
+3. Open that extracted folder in VS Code (`File → Open Folder`).
+4. Double-click `setup.bat`, or open a terminal in the folder and run:
 
-### Manual Setup
+   ```powershell
+   py -3.11 -m venv .venv
+   .venv\Scripts\activate
+   python -m pip install --upgrade pip
+   pip install -r requirements-dev.txt
+   copy .env.example .env
+   ```
 
-### 1. Install Dependencies
-```bash
-pip install -r requirements.txt
+5. Open `.env` in VS Code. Add your **new** Telegram token. Set your own random `DASHBOARD_WEBHOOK_TOKEN` and `FLASK_SECRET_KEY` values. Save the file.
+
+If PowerShell blocks activation, you can skip activation and call `.venv\Scripts\python.exe` directly, as the batch files do.
+
+## Start TraI
+
+### Start both dashboard and Telegram bot
+
+Double-click `run_all.bat`. It opens the dashboard in a separate console and runs the Telegram bot in the current console. The bot token must be configured to start the Telegram bot.
+
+### Start only the web dashboard
+
+Double-click `run_dashboard.bat`, then open <http://127.0.0.1:5000> in Chrome or Edge. Check <http://127.0.0.1:5000/healthz> for the local health response.
+
+The dashboard can start without a Telegram token, but the **Send** action will be disabled by the server until a token is configured.
+
+### Start only the Telegram bot
+
+Double-click `run_telegram_bot.bat` or run:
+
+```powershell
+.venv\Scripts\python.exe run_telegram_bot.py
 ```
 
-### 2. Choose Your Interface
+Open your bot in Telegram and send `/start`. Complete the profile flow, then try `/help`, `/analyze RELIANCE.NS`, `/watchlist`, or `/recommend`.
 
-#### Option A: GUI Mode (Desktop Application)
-```bash
-python main.py
+### Start the desktop GUI
+
+Double-click `run_gui.bat` or run:
+
+```powershell
+.venv\Scripts\python.exe main.py --mode gui
 ```
 
-#### Option B: Telegram Bot Mode
-1. **Create a Telegram Bot**:
-   - Message @BotFather on Telegram
-   - Send `/newbot` and follow instructions
-   - Copy the bot token you receive
+The web dashboard is the Telegram admin inbox; the Tkinter GUI is a separate basic stock-prediction interface.
 
-2. **Configure the Bot**:
-   - Edit `bot_config.json`
-   - Replace `YOUR_TELEGRAM_BOT_TOKEN_HERE` with your actual token
+## Useful commands
 
-3. **Run the Bot**:
-   - **Easy Way (Windows)**: Double-click `run_telegram_bot.bat`
-   - **Command Line**: `python run_telegram_bot.py`
-   - **Python Mode**: `python main.py --mode telegram`
+```powershell
+# Syntax check
+.venv\Scripts\python.exe -m compileall -q .
 
-## Usage
+# Automated tests
+.venv\Scripts\python.exe -m pytest -v
 
-### GUI Mode
-1. Run `python main.py`
-2. Enter a stock symbol (e.g., RELIANCE.NS)
-3. Click "Fetch Data" to get historical data
-4. Click "Train Model" to train the AI model
-5. Click "Predict Next Price" to get predictions
+# Or run syntax, tests and installation smoke checks together (Windows)
+run_checks.bat
 
-### Telegram Bot Mode
-1. Start the bot and message `/start`
-2. Complete your profile (name, email, risk tolerance, goals)
-3. Use commands:
-   - `/analyze RELIANCE.NS` - Analyze a specific stock
-   - `/recommend` - Get personalized recommendations
-   - `/watchlist` - View your stock watchlist
-   - `/profile` - View/edit your profile
-   - `/help` - Show all commands
+# Coverage report
+.venv\Scripts\python.exe -m pytest --cov=. --cov-report=term-missing
 
-## Stock Symbols
-- **Indian Stocks**: Add `.NS` suffix (e.g., RELIANCE.NS, TCS.NS)
-- **US Stocks**: Use standard symbols (e.g., AAPL, GOOGL)
-- **Examples**: RELIANCE.NS, TCS.NS, INFY.NS, HDFCBANK.NS
+# Run one component directly
+.venv\Scripts\python.exe main.py --mode dashboard
+.venv\Scripts\python.exe main.py --mode telegram
+```
 
-## Bot Commands
+## Dashboard behaviour
 
-| Command | Description |
-|---------|-------------|
-| `/start` | Register and set up your profile |
-| `/profile` | View your profile and stats |
-| `/analyze <symbol>` | Analyze a specific stock |
-| `/recommend` | Get personalized stock recommendations |
-| `/watchlist` | View your stock watchlist |
-| `/status` | Check bot status |
-| `/help` | Show help message |
+- Telegram user messages are posted to the local dashboard webhook and saved to `messages.json`.
+- The browser receives updates through Socket.IO, with HTTP polling as a fallback.
+- Admin replies are sent synchronously through Telegram. A reply appears as delivered only after Telegram accepts it; failed sends return an error and are not recorded as delivered.
+- If the dashboard is offline, the bot writes incoming messages to the local JSON fallback store; restart the dashboard to view them.
 
-## Risk Levels
-- **🛡️ Low Risk**: Blue-chip stocks, stable companies
-- **⚖️ Medium Risk**: Balanced growth and stability
-- **🎲 High Risk**: Growth stocks, higher volatility
+## Project layout
 
-## Important Notes
+```text
+TraI/
+├── dashboard_server.py       # Local Flask + Socket.IO admin dashboard
+├── telegram_bot.py           # Telegram bot handlers
+├── run_telegram_bot.py       # Telegram configuration/launcher
+├── data_fetcher.py           # Yahoo Finance OHLCV ingestion/validation
+├── model_trainer.py          # Chronological holdout evaluation + regression
+├── trading_strategy.py       # RSI, MACD, moving averages and rule signals
+├── user_manager.py           # Local user profile/watchlist store
+├── gui.py                    # Tkinter stock-analysis GUI
+├── templates/dashboard.html
+├── static/css/style.css
+├── static/js/dashboard.js
+├── tests/                    # Automated regression tests
+├── requirements.txt
+├── requirements-dev.txt
+├── .env.example
+└── setup.bat / run_*.bat
+```
 
-### 🚨 **PAPER TRADING ONLY**
-- **⚠️ NO REAL TRADING**: This bot provides analysis and recommendations ONLY
-- **📊 VIRTUAL TRADING**: All trading suggestions are for educational purposes
-- **💰 NO EXECUTION**: The bot cannot place actual orders or execute trades
-- **🎓 EDUCATIONAL TOOL**: Designed for learning technical analysis and trading concepts
+## Known limitations / next improvements
 
-### ⚠️ **Risk Disclaimer**
-- **Trading involves risk**: Predictions are based on historical data and not guaranteed to be accurate
-- **Not financial advice**: Use for learning and research purposes only
-- **Past performance ≠ future results**: Historical data doesn't guarantee future outcomes
-- **Do your own research**: Always verify information before making investment decisions
-
-### 🔒 **Security & Privacy**
-- **Bot Token**: Keep your Telegram bot token secure and don't share it
-- **User Data**: All user data is stored locally in JSON files
-- **No External APIs**: No third-party trading platforms connected
-
-### 🌐 **Technical Requirements**
-- **Internet Required**: Active internet connection needed for stock data
-- **Data Sources**: Uses Yahoo Finance (yfinance) for historical data
-- **No Real-time Data**: Analysis based on end-of-day data
+- JSON persistence is suitable only for a local demo/single-instance run. Move to SQLite/PostgreSQL before multi-user or cloud deployment.
+- The dashboard has no authentication and must remain localhost-only.
+- Telegram delivery and live market data require valid credentials/network access and cannot be validated by offline unit tests.
+- The regression model uses a small set of OHLCV features and is a baseline, not a validated trading edge. Add walk-forward evaluation, transaction-cost-aware backtesting, benchmark comparisons, and out-of-sample reporting before making performance claims.
+- The project is **paper/research only**. No broker integration or live order execution is included.
 
 ## Troubleshooting
 
-### GUI Issues
-- Ensure tkinter is properly installed
-- Try running as administrator
-
-### Telegram Bot Issues
-- Verify your bot token in `bot_config.json`
-- Check if bot is properly created with @BotFather
-- Ensure bot is not already running elsewhere
-
-### Data Fetching Issues
-- Check internet connection
-- Verify stock symbol format
-- Some symbols may not be available in all regions
-
-## Contributing
-Feel free to contribute improvements or report issues!
+- **`ModuleNotFoundError`**: rerun `setup.bat`; make sure you use `.venv\Scripts\python.exe`, not another Python installation.
+- **`TELEGRAM_BOT_TOKEN is not configured`**: edit `.env`; confirm the filename is `.env`, not `.env.txt`.
+- **Telegram `Unauthorized`**: revoke the exposed token with @BotFather and use the newly generated token.
+- **No stock data**: verify the ticker (`RELIANCE.NS`, `TCS.NS`), internet access, and Yahoo Finance availability. Try again later if rate-limited.
+- **Dashboard page opens but is empty**: check the dashboard console, `/healthz`, and browser developer console. Socket.IO uses an external CDN; HTTP polling still refreshes the dashboard if Socket.IO is unavailable.
+- **Admin reply fails**: confirm the bot has already received `/start` from that user, the token is valid, and the dashboard can reach Telegram. A failed delivery is reported rather than being marked as sent.
+- **Port 5000 already in use**: change `DASHBOARD_PORT` in `.env` and open the matching localhost URL.
 
 ## License
-This project is for educational purposes only.
+
+Add a license before accepting outside contributions or distributing this project. Check the licences and terms of every dependency and data source before commercial use.

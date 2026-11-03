@@ -1,7 +1,12 @@
-yfinance
-scikit-learn
-pandas
-numpy
-matplotlib
+# Install with Python 3.11 (recommended)
+yfinance>=0.2.54,<1.0
+scikit-learn>=1.5,<2.0
+pandas>=2.2,<4.0
+numpy>=1.26,<3.0
+matplotlib>=3.9,<4.0
 python-telegram-bot==20.7
-python-dotenv
+python-dotenv>=1.0,<2.0
+requests>=2.31,<3.0
+Flask>=3.0,<4.0
+Flask-SocketIO>=5.3,<6.0
+simple-websocket>=1.0,<2.0

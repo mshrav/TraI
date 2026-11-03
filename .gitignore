@@ -1,0 +1,29 @@
+# Secrets and local runtime data
+.env
+.env.*
+!.env.example
+bot_config.json
+user_data.json
+messages.json
+*.corrupt
+*.tmp
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Build/log/model/cache output
+build/
+dist/
+*.spec
+*.log
+logs/
+models/
+.cache/
+.DS_Store
+Thumbs.db
